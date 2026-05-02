@@ -9,6 +9,10 @@ and take ownership of:
 - `supabase/migrations/20240101000001_create_scenarios.sql`
 - `supabase/migrations/20240101000002_create_profiles_and_chat.sql`
 
+**Note:** Supabase CLI and Docker are not installed on the dev machine.
+Migrations could not be verified locally with `supabase start && supabase db reset`.
+Please test these migrations in your environment.
+
 ### Request 2: Scenario Content
 I need markdown files in `content/scenarios/` for the seed script. I created
 3 initial scenarios but would appreciate your review:
