@@ -1,33 +1,24 @@
-import { useState, useRef, useEffect } from 'react'
+import { useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Send, Bot, User, AlertTriangle, CheckCircle2, Loader2, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-
-interface Citation {
-  act: string
-  section: string
-  verified: boolean
-  url?: string
-}
-
-interface Message {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-  citations?: Citation[]
-  timestamp: Date
-}
+import { useChatStore, type Message } from '@/store/chatStore'
 
 export default function ChatPage() {
   const { t } = useTranslation()
-  const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState('')
-  const [isStreaming, setIsStreaming] = useState(false)
+  const {
+    messages,
+    input,
+    isStreaming,
+    setInput,
+    setIsStreaming,
+    addMessage,
+    updateAssistantMessage,
+  } = useChatStore()
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -49,7 +40,7 @@ export default function ChatPage() {
       timestamp: new Date(),
     }
 
-    setMessages((prev) => [...prev, userMessage])
+    addMessage(userMessage)
     setInput('')
     setIsStreaming(true)
 
@@ -61,7 +52,7 @@ export default function ChatPage() {
       timestamp: new Date(),
     }
 
-    setMessages((prev) => [...prev, assistantMessage])
+    addMessage(assistantMessage)
 
     try {
       const functionsUrl = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL
@@ -101,22 +92,10 @@ export default function ChatPage() {
                 const parsed = JSON.parse(data)
                 if (parsed.content) {
                   fullContent += parsed.content
-                  setMessages((prev) =>
-                    prev.map((m) =>
-                      m.id === assistantMessage.id
-                        ? { ...m, content: fullContent }
-                        : m
-                    )
-                  )
+                  updateAssistantMessage(assistantMessage.id, fullContent)
                 }
                 if (parsed.citations) {
-                  setMessages((prev) =>
-                    prev.map((m) =>
-                      m.id === assistantMessage.id
-                        ? { ...m, citations: parsed.citations }
-                        : m
-                    )
-                  )
+                  updateAssistantMessage(assistantMessage.id, fullContent, parsed.citations)
                 }
               } catch {
                 // partial JSON, skip
@@ -137,13 +116,7 @@ In the meantime, you can browse the **Know Your Rights** section for pre-written
 ---
 *${t('disclaimer.short')}*`
 
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === assistantMessage.id
-            ? { ...m, content: errorContent }
-            : m
-        )
-      )
+      updateAssistantMessage(assistantMessage.id, errorContent)
     } finally {
       setIsStreaming(false)
       inputRef.current?.focus()
