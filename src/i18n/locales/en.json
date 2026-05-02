@@ -1,0 +1,76 @@
+{
+  "app": {
+    "name": "NyayMitra",
+    "tagline": "Know Your Rights",
+    "description": "AI-powered legal awareness for Indian citizens"
+  },
+  "nav": {
+    "home": "Home",
+    "rights": "Know Your Rights",
+    "chat": "Ask NyayMitra",
+    "about": "About"
+  },
+  "home": {
+    "hero_title": "Know Your Legal Rights",
+    "hero_subtitle": "NyayMitra helps you understand Indian laws in simple language. Free, multilingual, and always available.",
+    "cta_rights": "Explore Your Rights",
+    "cta_chat": "Chat with NyayMitra",
+    "features": {
+      "rights": {
+        "title": "Know Your Rights",
+        "description": "Browse common legal scenarios with clear explanations"
+      },
+      "chat": {
+        "title": "AI Legal Awareness",
+        "description": "Ask questions about Indian laws in plain language"
+      },
+      "multilingual": {
+        "title": "Multilingual",
+        "description": "Available in English, Hindi, and Marathi"
+      }
+    }
+  },
+  "rights": {
+    "title": "Know Your Rights",
+    "subtitle": "Select a category to learn about your legal rights",
+    "search_placeholder": "Search scenarios...",
+    "categories": {
+      "all": "All",
+      "tenant": "Tenant Rights",
+      "consumer": "Consumer Protection",
+      "workplace": "Workplace Rights",
+      "criminal": "Criminal Law",
+      "family": "Family Law",
+      "rti": "Right to Information"
+    },
+    "read_more": "Read More",
+    "related_statutes": "Related Statutes"
+  },
+  "chat": {
+    "title": "Ask NyayMitra",
+    "subtitle": "Ask any question about Indian laws. I'll help you understand your rights.",
+    "placeholder": "Type your legal question here...",
+    "send": "Send",
+    "thinking": "Thinking...",
+    "citation_unverified": "Unverified citation — verify with official sources",
+    "citation_verified": "Verified citation",
+    "disclaimer_chat": "NyayMitra is an AI assistant for legal awareness. Responses are not legal advice."
+  },
+  "disclaimer": {
+    "text": "⚠️ NyayMitra is an educational legal awareness tool, NOT a law firm or legal advisor. The information provided is for general awareness only and does not constitute legal advice. Always consult a qualified advocate for your specific situation.",
+    "short": "For educational purposes only. Not legal advice."
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "hi": "हिन्दी",
+    "mr": "मराठी"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try Again",
+    "back": "Back",
+    "close": "Close"
+  }
+}
