@@ -128,13 +128,76 @@ interface RetrievedDoc {
 }
 
 async function retrieveContext(
-  _supabase: ReturnType<typeof createClient>,
-  _query: string
+  supabase: ReturnType<typeof createClient>,
+  query: string
 ): Promise<RetrievedDoc[]> {
-  // TODO_RETRIEVAL: implement pgvector + FTS retrieval per ADR 002 and
-  // ARCHITECTURE.md. Return top-k=8 chunks across statute_sections and
-  // scenarios.
-  return []
+  try {
+    const USE_CLOUD_FALLBACK = Deno.env.get("EMBEDDING_FALLBACK") === "cloud"
+    const OLLAMA_URL = Deno.env.get("OLLAMA_URL") || "http://localhost:11434"
+    let embedding: number[]
+
+    if (USE_CLOUD_FALLBACK) {
+      const apiKey = Deno.env.get("GEMINI_API_KEY")
+      if (!apiKey) throw new Error("GEMINI_API_KEY required for cloud fallback")
+      const res = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=\${apiKey}\`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "models/text-embedding-004",
+          content: { parts: [{ text: query }] }
+        })
+      })
+      if (!res.ok) throw new Error(\`Cloud embedding error: \${res.statusText}\`)
+      const data = await res.json()
+      embedding = data.embedding?.values
+    } else {
+      const res = await fetch(\`\${OLLAMA_URL}/api/embeddings\`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "bge-large",
+          prompt: query
+        })
+      })
+      if (!res.ok) throw new Error(\`Ollama embedding error: \${res.statusText}\`)
+      const data = await res.json()
+      embedding = data.embedding
+    }
+
+    if (!embedding) return []
+
+    const { data: chunks, error } = await supabase.rpc('search_legal_context', {
+      query_text: query,
+      query_embedding: JSON.stringify(embedding),
+      match_count: 8
+    })
+
+    if (error) {
+      console.error("RPC search_legal_context failed:", error.message)
+      return []
+    }
+
+    // Log the retrieval asynchronously
+    const statuteIds = chunks.filter((c: any) => c.source_type === 'statute').map((c: any) => c.id)
+    const scenarioIds = chunks.filter((c: any) => c.source_type === 'scenario').map((c: any) => c.id)
+    
+    // Fire and forget logging
+    supabase.from('query_logs').insert({
+      query_text: query,
+      retrieved_statute_ids: statuteIds,
+      retrieved_scenario_ids: scenarioIds
+    }).then(({ error }) => {
+      if (error) console.error("Failed to log query:", error.message)
+    })
+
+    return (chunks || []).map((c: any) => ({
+      source: c.source,
+      content: c.content
+    }))
+  } catch (err) {
+    console.error("Context retrieval failed:", (err as Error).message)
+    return []
+  }
 }
 
 function buildContextBlock(docs: RetrievedDoc[]): string {
