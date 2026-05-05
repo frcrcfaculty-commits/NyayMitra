@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { linkifyCitations } from '@/lib/citationLinkifier'
 
 interface Scenario {
   id: string
@@ -69,9 +70,10 @@ export default function RightsDetailPage() {
   const getContent = () => {
     if (!scenario) return ''
     const lang = i18n.language
-    if (lang === 'hi' && scenario.content_hi) return scenario.content_hi
-    if (lang === 'mr' && scenario.content_mr) return scenario.content_mr
-    return scenario.content
+    let content = scenario.content
+    if (lang === 'hi' && scenario.content_hi) content = scenario.content_hi
+    if (lang === 'mr' && scenario.content_mr) content = scenario.content_mr
+    return linkifyCitations(content)
   }
 
   const getTitle = () => {
