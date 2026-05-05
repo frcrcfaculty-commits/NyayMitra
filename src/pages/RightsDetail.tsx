@@ -10,6 +10,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { linkifyCitations } from '@/lib/citationLinkifier'
+import { TriggerWarningBanner } from '@/components/TriggerWarningBanner'
+import { HelplineCard } from '@/components/HelplineCard'
 
 interface Scenario {
   id: string
@@ -24,6 +26,7 @@ interface Scenario {
   icon: string | null
   related_statutes: string[]
   tags: string[]
+  trigger_warning?: string | null
 }
 
 interface Statute {
@@ -132,6 +135,10 @@ export default function RightsDetailPage() {
         <h1 className="text-3xl sm:text-4xl font-bold">{getTitle()}</h1>
       </div>
 
+      {scenario.trigger_warning && (
+        <TriggerWarningBanner message={scenario.trigger_warning} />
+      )}
+
       {/* Content */}
       <article className="prose prose-slate dark:prose-invert max-w-none mb-12 prose-headings:font-semibold prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -174,13 +181,17 @@ export default function RightsDetailPage() {
         </section>
       )}
 
-      {/* Disclaimer */}
-      <Alert className="border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30">
-        <AlertTriangle className="h-4 w-4 text-amber-500" />
-        <AlertDescription className="text-sm text-amber-700 dark:text-amber-300">
-          {t('disclaimer.text')}
-        </AlertDescription>
-      </Alert>
+      {/* Disclaimer and Helplines */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start mt-8">
+        <HelplineCard category={scenario.category} tags={scenario.tags} />
+        
+        <Alert className="border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 h-full">
+          <AlertTriangle className="h-4 w-4 text-amber-500" />
+          <AlertDescription className="text-sm text-amber-700 dark:text-amber-300">
+            {t('disclaimer.text')}
+          </AlertDescription>
+        </Alert>
+      </div>
     </div>
   )
 }

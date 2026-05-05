@@ -11,7 +11,7 @@ export function linkifyCitations(markdown: string): string {
   // This regex looks for Statute abbreviations followed by section notation (s., Section, sec.)
   // It avoids matches that are already inside a markdown link [...]
   const regex = new RegExp(
-    \`(?<!\\\\[[^\\\\]]*)\\\\b((?:\${STATUTE_PATTERN}|constitution)\\\\s+(?:s\\\\.|section\\\\s+|sec\\\\.|article\\\\s+)\\\\d+[A-Z]?)\\\\b(?![^\\[]*\\\\])\`,
+    `(?<!\\[[^\\]]*)\\b((?:${STATUTE_PATTERN}|constitution)\\s+(?:s\\.|section\\s+|sec\\.|article\\s+)\\d+[A-Z]?)\\b(?![^\\[]*\\])`,
     'gi'
   )
 
@@ -24,16 +24,16 @@ export function linkifyCitations(markdown: string): string {
     if (normalized.startsWith('constitution')) {
       slug = 'constitution'
     } else {
-      const parts = normalized.split(/\\s+/)
+      const parts = normalized.split(/\s+/)
       slug = parts[0]
     }
     
     // Extract section number
-    const sectionMatch = normalized.match(/\\d+[a-z]?$/i)
+    const sectionMatch = normalized.match(/\d+[a-z]?$/i)
     const section = sectionMatch ? sectionMatch[0] : ''
     
     if (slug && section) {
-      return \`[\${match}](/law/\${slug}/\${section})\`
+      return `[${match}](/law/${slug}/${section})`
     }
     
     return match
@@ -68,7 +68,7 @@ describe('citationLinkifier', () => {
   
   it('does not linkify inside code blocks', () => {
     // This is tricky without a full markdown parser, we rely on the negative lookbehind in the regex
-    // which handles [links] but not \`code\`. For MVP we accept this limitation.
+    // which handles [links] but not `code`. For MVP we accept this limitation.
   })
 })
 */

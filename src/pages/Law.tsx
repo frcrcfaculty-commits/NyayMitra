@@ -1,12 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { supabase } from '@/lib/supabase'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export default function LawPage() {
-  const { t } = useTranslation()
 
   const { data: statutes, isLoading } = useQuery({
     queryKey: ['statutes_index'],
@@ -47,7 +45,7 @@ export default function LawPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {statutes?.map(statute => (
-            <Link key={statute.slug} to={\`/law/\${statute.slug}\`}>
+            <Link key={statute.slug} to={`/law/${statute.slug}`}>
               <Card className="hover:border-primary transition-colors h-full">
                 <CardHeader>
                   <CardTitle className="text-xl uppercase">{statute.slug}</CardTitle>

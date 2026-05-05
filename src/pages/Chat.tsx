@@ -1,11 +1,12 @@
 import { useRef, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Send, Bot, User, AlertTriangle, CheckCircle2, Loader2, ExternalLink } from 'lucide-react'
+import { Send, Bot, User, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useChatStore, type Message } from '@/store/chatStore'
+import { CitationBadge } from '@/components/CitationBadge'
 
 export default function ChatPage() {
   const { t } = useTranslation()
@@ -223,24 +224,14 @@ In the meantime, you can browse the **Know Your Rights** section for pre-written
 
                 {/* Citations */}
                 {message.citations && message.citations.length > 0 && (
-                  <div className="mt-2 space-y-1">
+                  <div className="mt-2 flex flex-wrap gap-2">
                     {message.citations.map((citation, i) => (
-                      <div
+                      <CitationBadge
                         key={i}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs border mr-1"
-                      >
-                        {citation.verified ? (
-                          <CheckCircle2 className="h-3 w-3 text-emerald-500" />
-                        ) : (
-                          <AlertTriangle className="h-3 w-3 text-amber-500" />
-                        )}
-                        <span>{citation.act} §{citation.section}</span>
-                        {citation.url && (
-                          <a href={citation.url} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-3 w-3" />
-                          </a>
-                        )}
-                      </div>
+                        citation={`${citation.act} s.${citation.section}`}
+                        href={citation.url || undefined}
+                        verified={citation.verified}
+                      />
                     ))}
                   </div>
                 )}

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Scale, Menu, X, MessageCircle, BookOpen, Home } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { LanguageToggle } from '@/components/LanguageToggle'
+import { DisclaimerFooter } from '@/components/DisclaimerFooter'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -105,26 +106,7 @@ export function Layout({ children }: LayoutProps) {
         {children}
       </main>
 
-      {/* Disclaimer Footer */}
-      <footer className="border-t border-border mt-auto">
-        <div className="disclaimer-bar">
-          <div className="container mx-auto px-4 py-3">
-            <p className="text-xs text-center text-muted-foreground leading-relaxed">
-              {t('disclaimer.text')}
-            </p>
-          </div>
-        </div>
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
-            <p>© {new Date().getFullYear()} NyayMitra. {t('disclaimer.short')}</p>
-            <div className="flex gap-4">
-              <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
-              <a href="#" className="hover:text-foreground transition-colors">Terms</a>
-              <a href="#" className="hover:text-foreground transition-colors">Contact</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <DisclaimerFooter />
     </div>
   )
 }

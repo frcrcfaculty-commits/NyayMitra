@@ -45,7 +45,7 @@ export default function StatuteSectionPage() {
   const { data: relatedScenarios } = useQuery({
     queryKey: ['related_scenarios', slug, section],
     queryFn: async () => {
-      const key_section = \`\${slug?.toUpperCase()} s.\${section}\`
+      const key_section = `${slug?.toUpperCase()} s.${section}`
       const { data, error } = await supabase
         .from('scenarios')
         .select('slug, title, icon')
@@ -74,7 +74,7 @@ export default function StatuteSectionPage() {
         ) : (
           <div className="flex flex-col gap-2">
             {index?.map(item => (
-              <Link key={item.section} to={\`/law/\${slug}/\${item.section}\`}>
+              <Link key={item.section} to={`/law/${slug}/${item.section}`}>
                 <div className="p-4 rounded-lg border hover:bg-accent transition-colors">
                   <span className="font-semibold w-24 inline-block">Section {item.section}</span>
                   <span className="text-muted-foreground">{item.title}</span>
@@ -90,7 +90,7 @@ export default function StatuteSectionPage() {
   // Render Section detail
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <Link to={\`/law/\${slug}\`} className="inline-block mb-6">
+      <Link to={`/law/${slug}`} className="inline-block mb-6">
         <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
           <ArrowLeft className="h-4 w-4" /> Back to {slug?.toUpperCase()} Index
         </Button>
@@ -133,7 +133,7 @@ export default function StatuteSectionPage() {
               {relatedScenarios && relatedScenarios.length > 0 ? (
                 <div className="space-y-3">
                   {relatedScenarios.map(scenario => (
-                    <Link key={scenario.slug} to={\`/rights/\${scenario.slug}\`}>
+                    <Link key={scenario.slug} to={`/rights/${scenario.slug}`}>
                       <Card className="hover:border-primary transition-colors">
                         <CardContent className="p-4 flex items-center gap-3">
                           <span className="text-2xl">{scenario.icon || '📄'}</span>
