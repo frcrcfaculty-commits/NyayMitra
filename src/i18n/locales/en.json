@@ -37,11 +37,15 @@
     "categories": {
       "all": "All",
       "tenant": "Tenant Rights",
-      "consumer": "Consumer Protection",
-      "workplace": "Workplace Rights",
       "criminal": "Criminal Law",
       "family": "Family Law",
-      "rti": "Right to Information"
+      "family-criminal": "Family / Criminal",
+      "consumer": "Consumer",
+      "workplace": "Workplace",
+      "financial": "Financial",
+      "cyber": "Cybercrime",
+      "civic": "Civic Rights",
+      "succession": "Wills & Succession"
     },
     "read_more": "Read More",
     "related_statutes": "Related Statutes"

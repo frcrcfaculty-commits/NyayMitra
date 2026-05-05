@@ -36,12 +36,16 @@
     "search_placeholder": "परिदृश्य खोजें...",
     "categories": {
       "all": "सभी",
-      "tenant": "किरायेदार अधिकार",
-      "consumer": "उपभोक्ता संरक्षण",
-      "workplace": "कार्यस्थल अधिकार",
+      "tenant": "किरायेदार के अधिकार",
       "criminal": "आपराधिक कानून",
       "family": "पारिवारिक कानून",
-      "rti": "सूचना का अधिकार"
+      "family-criminal": "पारिवारिक / आपराधिक",
+      "consumer": "उपभोक्ता",
+      "workplace": "कार्यस्थल",
+      "financial": "वित्तीय",
+      "cyber": "साइबर अपराध",
+      "civic": "नागरिक अधिकार",
+      "succession": "वसीयत और उत्तराधिकार"
     },
     "read_more": "और पढ़ें",
     "related_statutes": "संबंधित कानून"

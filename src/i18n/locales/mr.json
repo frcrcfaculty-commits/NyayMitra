@@ -36,12 +36,16 @@
     "search_placeholder": "परिस्थिती शोधा...",
     "categories": {
       "all": "सर्व",
-      "tenant": "भाडेकरू हक्क",
-      "consumer": "ग्राहक संरक्षण",
-      "workplace": "कामाच्या ठिकाणचे हक्क",
+      "tenant": "भाडेकरूचे हक्क",
       "criminal": "फौजदारी कायदा",
       "family": "कौटुंबिक कायदा",
-      "rti": "माहितीचा अधिकार"
+      "family-criminal": "कौटुंबिक / फौजदारी",
+      "consumer": "ग्राहक",
+      "workplace": "कामाचे ठिकाण",
+      "financial": "आर्थिक",
+      "cyber": "सायबर गुन्हे",
+      "civic": "नागरी हक्क",
+      "succession": "मृत्युपत्र आणि वारसा"
     },
     "read_more": "अधिक वाचा",
     "related_statutes": "संबंधित कायदे"
