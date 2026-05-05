@@ -8,6 +8,8 @@ import HomePage from '@/pages/Home'
 import RightsPage from '@/pages/Rights'
 import RightsDetailPage from '@/pages/RightsDetail'
 import ChatPage from '@/pages/Chat'
+import LawPage from '@/pages/Law'
+import StatuteSectionPage from '@/pages/StatuteSection'
 
 // Import i18n (side-effect: initializes i18next)
 import '@/i18n'
@@ -43,6 +45,9 @@ function App() {
             <Route path="/rights" element={<RightsPage />} />
             <Route path="/rights/:slug" element={<RightsDetailPage />} />
             <Route path="/chat" element={<ChatPage />} />
+            <Route path="/law" element={<LawPage />} />
+            <Route path="/law/:slug" element={<StatuteSectionPage />} />
+            <Route path="/law/:slug/:section" element={<StatuteSectionPage />} />
           </Routes>
         </Layout>
         <Toaster />
