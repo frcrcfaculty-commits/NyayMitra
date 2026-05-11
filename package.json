@@ -11,10 +11,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "typecheck": "tsc -b --noEmit"
+    "typecheck": "tsc -b --noEmit",
+    "android:dev": "pnpm build && npx cap sync && npx cap open android",
+    "android:build": "pnpm build && npx cap sync android"
   },
   "dependencies": {
-    "@capacitor/core": "^8.3.1",
+    "@capacitor/android": "^7.6.4",
+    "@capacitor/core": "^7.6.4",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-label": "^2.1.7",
@@ -43,7 +46,7 @@
     "zustand": "^5.0.5"
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.3.1",
+    "@capacitor/cli": "^7.6.4",
     "@eslint/js": "^10.0.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -58,7 +61,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
-    "jsdom": "^29.1.1",
+    "jsdom": "^25.0.1",
     "postcss": "^8.5.4",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
@@ -76,7 +79,8 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "esbuild"
+      "esbuild",
+      "sharp"
     ]
   }
 }
