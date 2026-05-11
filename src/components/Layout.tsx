@@ -18,6 +18,7 @@ export function Layout({ children }: LayoutProps) {
   const navItems = [
     { path: '/', label: t('nav.home'), icon: Home },
     { path: '/rights', label: t('nav.rights'), icon: BookOpen },
+    { path: '/law', label: t('nav.statutes'), icon: Scale },
     { path: '/chat', label: t('nav.chat'), icon: MessageCircle },
   ]
 
