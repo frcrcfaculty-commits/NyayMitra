@@ -132,39 +132,66 @@ async function retrieveContext(
   query: string
 ): Promise<RetrievedDoc[]> {
   try {
-    const USE_CLOUD_FALLBACK = Deno.env.get("EMBEDDING_FALLBACK") === "cloud"
-    const OLLAMA_URL = Deno.env.get("OLLAMA_URL") || "http://localhost:11434"
-    let embedding: number[]
+    // PRODUCTION DEFAULT: Gemini gemini-embedding-001 with outputDimensionality=1024.
+    // This matches the schema's vector(1024) AND works from inside Supabase's
+    // edge-function isolate (which cannot reach localhost on Hansal's Mac, so the
+    // original Ollama-default code path would always fail in production).
+    //
+    // Dev-time option: set USE_OLLAMA_EMBED=1 + OLLAMA_URL to a publicly-reachable
+    // Ollama (e.g. via Tailscale Funnel or ngrok). Default off.
+    const USE_OLLAMA = Deno.env.get("USE_OLLAMA_EMBED") === "1"
+    let embedding: number[] | undefined
 
-    if (USE_CLOUD_FALLBACK) {
-      const apiKey = Deno.env.get("GEMINI_API_KEY")
-      if (!apiKey) throw new Error("GEMINI_API_KEY required for cloud fallback")
-      const res = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=\${apiKey}\`, {
+    if (USE_OLLAMA) {
+      const ollamaUrl = Deno.env.get("OLLAMA_URL")
+      if (!ollamaUrl) throw new Error("USE_OLLAMA_EMBED=1 but OLLAMA_URL missing")
+      const res = await fetch(\`\${ollamaUrl}/api/embeddings\`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "models/text-embedding-004",
-          content: { parts: [{ text: query }] }
-        })
-      })
-      if (!res.ok) throw new Error(\`Cloud embedding error: \${res.statusText}\`)
-      const data = await res.json()
-      embedding = data.embedding?.values
-    } else {
-      const res = await fetch(\`\${OLLAMA_URL}/api/embeddings\`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "bge-large",
-          prompt: query
-        })
+          model: Deno.env.get("OLLAMA_MODEL") || "bge-large",
+          prompt: query,
+        }),
       })
       if (!res.ok) throw new Error(\`Ollama embedding error: \${res.statusText}\`)
       const data = await res.json()
       embedding = data.embedding
+    } else {
+      const apiKey = Deno.env.get("GEMINI_API_KEY")
+      if (!apiKey) {
+        console.warn("retrieveContext: GEMINI_API_KEY not set; skipping retrieval")
+        return []
+      }
+      const res = await fetch(
+        \`https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=\${apiKey}\`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: { parts: [{ text: query }] },
+            outputDimensionality: 1024,
+            taskType: "RETRIEVAL_QUERY",
+          }),
+        }
+      )
+      if (!res.ok) {
+        const body = await res.text().catch(() => "")
+        throw new Error(\`Gemini embedding \${res.status}: \${body.slice(0, 200)}\`)
+      }
+      const data = await res.json()
+      embedding = data.embedding?.values
     }
 
-    if (!embedding) return []
+    if (!embedding || embedding.length === 0) {
+      console.warn("retrieveContext: empty embedding returned; skipping retrieval")
+      return []
+    }
+    if (embedding.length !== 1024) {
+      console.error(
+        \`retrieveContext: embedding dim \${embedding.length} != 1024; retrieval will fail.\`
+      )
+      return []
+    }
 
     const { data: chunks, error } = await supabase.rpc('search_legal_context', {
       query_text: query,
@@ -178,9 +205,13 @@ async function retrieveContext(
     }
 
     // Log the retrieval asynchronously
-    const statuteIds = chunks.filter((c: any) => c.source_type === 'statute').map((c: any) => c.id)
-    const scenarioIds = chunks.filter((c: any) => c.source_type === 'scenario').map((c: any) => c.id)
-    
+    const statuteIds = (chunks || [])
+      .filter((c: { source_type: string }) => c.source_type === 'statute')
+      .map((c: { id: string }) => c.id)
+    const scenarioIds = (chunks || [])
+      .filter((c: { source_type: string }) => c.source_type === 'scenario')
+      .map((c: { id: string }) => c.id)
+
     // Fire and forget logging
     supabase.from('query_logs').insert({
       query_text: query,
@@ -190,7 +221,7 @@ async function retrieveContext(
       if (error) console.error("Failed to log query:", error.message)
     })
 
-    return (chunks || []).map((c: any) => ({
+    return (chunks || []).map((c: { source: string; content: string }) => ({
       source: c.source,
       content: c.content
     }))
